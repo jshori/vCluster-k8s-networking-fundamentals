@@ -36,10 +36,11 @@ This is how `Gateway API` came to be, the official successor to `Ingress`.
 - **October 31, 2023**: Gateway API reached its **v1.0 GA (General Availability)** release, meaning it was now officially declared "production-ready and stable." At the same time, the older `Ingress` API was officially "frozen", no new features are added to it anymore, it stays as-is. All new development now happens in Gateway API
 - In **2022**, a separate workstream started, called **GAMMA** (Gateway API for Mesh Management and Administration), whose job was to figure out whether Gateway API could also be used for service mesh (east-west traffic)
 - **May 9, 2024**: Gateway API **v1.1** was released, bringing service mesh support (the result of GAMMA's work) and GRPCRoute officially into the Standard/GA channel
-- **As of 2026**, Gateway API has reached v1.5, with regular updates continuing to ship. By the time of GA (November 2023), it already had 20+ different companies/projects implementing it, Envoy Gateway, Istio, Cilium, GKE, Kong, and many more; that number has grown further since
+- **February 27, 2026**: Gateway API **v1.5** was released, moving `TLSRoute` (among other features) into the Standard/GA channel
+- **June 30, 2026**: Gateway API **v1.6** was released, moving `TCPRoute` and `UDPRoute` into the Standard/GA channel as well, so raw TCP and UDP traffic routing now has the same production-grade stability as HTTP and TLS routing. As of this guide, **v1.6.1** (a bug-fix patch release) is the latest available version. By the time of the original GA release (November 2023), Gateway API already had 20+ different companies/projects implementing it, Envoy Gateway, Istio, Cilium, GKE, Kong, and many more; that number has grown further since
 - **March 2026**: Per the Kubernetes SIG Network announcement, the `ingress-nginx` controller has **already stopped** receiving new releases, bug fixes, or security patches after this date (best-effort maintenance only ran until then). This makes migration away from it not just a "nice to have" but a necessary step for teams still relying on it
 
-**Short summary:** Limitations of Ingress became apparent, so SIG-Network designed a new standard together with vendors (about 4 years of work, 2019 to 2023). It reached GA in 2023, and Ingress was frozen. Mesh support was added too (GAMMA, 2022 to 2024). Today it's the industry standard, and the retirement of older systems like `ingress-nginx` has made adopting it even more necessary.
+**Short summary:** Limitations of Ingress became apparent, so SIG-Network designed a new standard together with vendors (about 4 years of work, 2019 to 2023). It reached GA in 2023, and Ingress was frozen. Mesh support was added too (GAMMA, 2022 to 2024). By mid-2026, every major traffic type, HTTP, TLS, TCP, and UDP, has reached full production-grade (Standard/GA) status. Today it's the industry standard, and the retirement of older systems like `ingress-nginx` has made adopting it even more necessary.
 
 ## 5. The new approach: how these CRDs are different
 
@@ -50,7 +51,7 @@ The difference: the older CRDs (`IngressRoute`, etc.) were built solely by Traef
 Being a "shared standard" doesn't just mean different vendors happen to build similar things. In practice, every vendor installs the exact same, official YAML file published by SIG-Network, without modifying it:
 
 ```bash
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.1/standard-install.yaml
 ```
 
 In other words, the CRD's "shape/schema" (the blueprint of the form) is literally identical for everyone, coming from a single source. The **controller**, the software that reads this form and does the actual work (like the Envoy Gateway controller), is what each vendor writes independently. The schema is shared; the implementation is not.
@@ -66,6 +67,8 @@ This is also why, if you switch from Traefik to Envoy Gateway (or any other Gate
 - [The Story of Gateway API, Google Open Source Blog](https://opensource.googleblog.com/2023/11/the-story-of-gateway-api.html)
 - [Gateway API v1.0: GA Release, Kubernetes blog](https://kubernetes.io/blog/2023/10/31/gateway-api-ga/)
 - [Gateway API v1.1: Service mesh, GRPCRoute, Kubernetes blog](https://kubernetes.io/blog/2024/05/09/gateway-api-v1-1/)
+- [Gateway API v1.5: Moving features to Stable, Kubernetes blog](https://kubernetes.io/blog/2026/04/21/gateway-api-v1-5/)
+- [Gateway API v1.6: TCPRoute and UDPRoute Graduate to Standard, Kubernetes blog](https://kubernetes.io/blog/2026/08/03/gateway-api-v1-6-release/)
 - [GAMMA Initiative, official docs](https://gateway-api.sigs.k8s.io/mesh/gamma/)
 - [kubernetes-sigs/gateway-api, GitHub (rename history)](https://github.com/kubernetes-sigs/gateway-api)
 - [Ingress NGINX retirement, Kubernetes SIG Network announcement](https://techcommunity.microsoft.com/blog/azurearchitectureblog/from-ingress-to-gateway-api-a-pragmatic-path-forward-and-why-it-matters-now/4489779)
