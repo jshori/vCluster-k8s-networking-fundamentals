@@ -87,7 +87,7 @@ A lot of modern APIs (including the one we just used) follow a pattern called **
 
 Now, these same concepts (client, server, request, response, and REST actions like GET/POST) apply to Kubernetes as well.
 
-When you run `kubectl apply -f file.yaml`, you're actually sending a **request** to Kubernetes' **API server**, exactly like what we just did with `curl` against the weather API. The only difference is: with the weather API, we did a **GET** ("show me the data"), but here we're doing a **POST**-like action ("create this new resource"). Kubernetes' API server (this is the **server**) processes it and sends back a response, "created successfully" or "here's an error."
+When you run `kubectl apply -f file.yaml`, you're actually sending a **request** to Kubernetes **API server**, exactly like what we just did with `curl` against the weather API. The only difference is: with the weather API, we did a **GET** ("show me the data"), but here we're doing a **POST**-like action ("create this new resource"). Kubernetes' API server (this is the **server**) processes it and sends back a response, "created successfully" or "here's an error."
 
 So the question is: **what** exactly is being "created"? Just like with the weather API, where we could ask for specific things (like "current weather," or "a 7-day forecast"), the Kubernetes API also has specific "things" you can manage, called **resources** (like `Pod`, `Service`).
 
