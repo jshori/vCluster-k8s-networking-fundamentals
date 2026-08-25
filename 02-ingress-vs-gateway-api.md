@@ -10,7 +10,7 @@ In Kubernetes, anything that Kubernetes tracks or manages is called a **"resourc
 
 `Ingress` was also a built-in Kubernetes resource type. It described how traffic coming from outside the cluster should be routed to a service inside it, using basic rules like "send requests for this domain name to this service." Kubernetes provided this natively, and it was common to everyone.
 
-A **CRD (Custom Resource Definition)** is a mechanism for creating a new, custom resource type, one that goes beyond Kubernetes' built-in resource types (`Pod`, `Service`, `Ingress`, etc.). Any vendor or company can use a CRD to teach Kubernetes about new "resource types" that Kubernetes didn't know about out of the box.
+A **CRD (Custom Resource Definition)** is a mechanism for creating a new, custom resource type, one that goes beyond Kubernetes built-in resource types (`Pod`, `Service`, `Ingress`, etc.). Any vendor or company can use a CRD to teach Kubernetes about new "resource types" that Kubernetes didn't know about out of the box.
 
 ## 2. The old way: every vendor built its own CRDs
 
