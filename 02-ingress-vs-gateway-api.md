@@ -10,11 +10,11 @@ In Kubernetes, anything that Kubernetes tracks or manages is called a **"resourc
 
 `Ingress` was also a built-in Kubernetes resource type. It described how traffic coming from outside the cluster should be routed to a service inside it, using basic rules like "send requests for this domain name to this service." Kubernetes provided this natively, and it was common to everyone.
 
-A **CRD (Custom Resource Definition)** is a mechanism for creating a new, custom resource type, one that goes beyond Kubernetes built-in resource types (`Pod`, `Service`, `Ingress`, etc.). Any vendor or company can use a CRD to teach Kubernetes about new "resource types" that Kubernetes didn't know about out of the box.
+A **CRD (Custom Resource Definition)** is a mechanism for creating a new, custom resource type, one that goes beyond Kubernetes' built-in resource types (`Pod`, `Service`, `Ingress`, etc.). Any vendor or company can use a CRD to teach Kubernetes about new "resource types" that Kubernetes didn't know about out of the box.
 
 ## 2. The old way: every vendor built its own CRDs
 
-Before the Gateway API standard existed, Kubernetes only had one basic resource type for this purpose, called `Ingress`. But `Ingress` was quite limited, so every vendor, Traefik, Envoy, NGINX, and others, built their own extra resource types via CRDs, to offer advanced features that plain `Ingress` couldn't provide.
+Before the Gateway API standard existed, Kubernetes only had one basic resource type for this purpose, called `Ingress`. But `Ingress` was quite limited, so every vendor, Traefik, NGINX, and others, built their own extra resource types via CRDs, to offer advanced features that plain `Ingress` couldn't provide.
 
 When a user wanted to use Traefik, and installed it on their Kubernetes cluster, the CRDs that the Traefik vendor had built (`IngressRoute`, `IngressRouteTCP`, `Middleware`, etc.) would get installed automatically, bundled right in with the Helm chart.
 
@@ -22,7 +22,38 @@ This was the **old approach**: one basic, common `Ingress` resource type for eve
 
 ## 3. The struggle set in, and something new was needed
 
-Early on, people were happy with the `Ingress` API. It was new, and it solved the basic use case (routing external traffic to a service). But gradually, as people started using Kubernetes for larger, more complex applications, they began to feel the strain. The limitations of `Ingress` became apparent: it only supported HTTP/HTTPS, lacked advanced routing, and because every vendor had its own annotations/CRDs, switching from one controller to another was difficult.
+Early on, people were happy with the `Ingress` API. It was new, and it solved the basic use case (routing external traffic to a service). But gradually, as people started using Kubernetes for larger, more complex applications, they began to feel the strain.
+
+The limitations of `Ingress` became apparent. It only supported HTTP/HTTPS. It had no built-in way to do things like traffic splitting (sending, say, 90% of traffic to one version of an app and 10% to a newer version, for testing) or routing based on request headers (like sending traffic to a different service depending on which mobile app version made the request). Every vendor had its own annotations/CRDs to work around this, which meant switching from one controller to another was difficult.
+
+On top of that, `Ingress` mixed everything into one resource. TLS settings, load balancer configuration, and routing rules for an application all lived in the same object. There was no separate resource for "the entry point" versus "an application's routes."
+
+For example, a single `Ingress` object typically looked like this:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+spec:
+  tls:
+  - hosts:
+    - foo.example.com
+    secretName: example-com   # TLS certificate, an infrastructure concern
+  rules:
+  - host: foo.example.com
+    http:
+      paths:
+      - path: /orders
+        pathType: Prefix
+        backend:
+          service:
+            name: foo-orders-app   # routing to a Service, an application concern
+            port:
+              number: 80
+```
+
+Notice the `tls` block (which certificate to use, an infrastructure-level decision) and the `rules` block (which path goes to which app, an application-level decision) both live in this exact same object. There's no way to give one team edit access to just the `tls` part and another team edit access to just the `rules` part, it's all one resource. This made it hard to cleanly split responsibilities between the team managing shared infrastructure and the team managing individual applications.
 
 Kubernetes itself is a graduated CNCF (Cloud Native Computing Foundation) project, where developers from around the world contribute for free to build and improve it. A specific team within Kubernetes, called **SIG-Network**, recognized that the limitations of `Ingress` couldn't be fixed with small patches, something new was needed. So they began designing a new standard, and this time, they brought vendors like Traefik and Istio into the discussion from the very start, so the new standard would be shaped around everyone's real-world use cases.
 
@@ -64,6 +95,7 @@ This is also why, if you switch from Traefik to Envoy Gateway (or any other Gate
 
 - [Traefik Helm Chart, CRD management](https://github.com/traefik/traefik-helm-chart)
 - [Kubernetes Gateway API, official docs](https://gateway-api.sigs.k8s.io/)
+- [Migrating from Ingress, Gateway API official docs](https://gateway-api.sigs.k8s.io/guides/getting-started/migrating-from-ingress/)
 - [The Story of Gateway API, Google Open Source Blog](https://opensource.googleblog.com/2023/11/the-story-of-gateway-api.html)
 - [Gateway API v1.0: GA Release, Kubernetes blog](https://kubernetes.io/blog/2023/10/31/gateway-api-ga/)
 - [Gateway API v1.1: Service mesh, GRPCRoute, Kubernetes blog](https://kubernetes.io/blog/2024/05/09/gateway-api-v1-1/)
