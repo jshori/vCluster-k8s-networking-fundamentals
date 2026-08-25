@@ -85,7 +85,7 @@ Being a "shared standard" doesn't just mean different vendors happen to build si
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.1/standard-install.yaml
 ```
 
-In other words, the CRD's "shape/schema" (the blueprint of the form) is literally identical for everyone, coming from a single source. The **controller**, the software that reads this form and does the actual work (like the Envoy Gateway controller), is what each vendor writes independently. The schema is shared; the implementation is not.
+In other words, the CRD's "shape/schema" (the blueprint of the form) is literally identical for everyone, coming from a single source. The **controller**, the software that reads this form and does the actual work, is what each vendor writes independently. If the vendor is Traefik, that's Traefik's own controller. If the vendor is Envoy Gateway, that's the Envoy Gateway controller. The schema is shared; the implementation is not.
 
 This is why, when Traefik installs its Gateway API support, it isn't creating its own new CRDs. It's using the same official CRDs that are the Kubernetes standard, ones that every Gateway API-compatible vendor in the world (Traefik, Envoy Gateway, Istio) already understands in exactly this same form.
 
